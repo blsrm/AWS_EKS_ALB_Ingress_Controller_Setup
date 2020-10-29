@@ -6,3 +6,14 @@ Step1: Deploy the relevant RBAC roles and role bindings as required by the AWS A
 ```
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml
 ```
+
+
+
+
+
+
+# Reference Links
+
+https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/master/docs/guide/walkthrough/echoserver.md
+https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/
+https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
