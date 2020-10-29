@@ -1,4 +1,4 @@
-# AWS_EKS_ALB_Ingress_Controller_Setup
+# AWS EKS ALB Ingress Controller Setup
 This document provides detailed step by step procedure for creating EKS Fargate ALB Ingress Controller
 
 Step1: Deploy the relevant RBAC roles and role bindings as required by the AWS ALB Ingress controller
