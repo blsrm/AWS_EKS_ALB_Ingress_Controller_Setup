@@ -14,6 +14,12 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingre
 
 # Reference Links
 
+### AWS ALB
 https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/master/docs/guide/walkthrough/echoserver.md
 https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/
 https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
+
+### NGINXC
+https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-manifests/
+
+
