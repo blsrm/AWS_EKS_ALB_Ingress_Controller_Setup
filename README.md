@@ -16,6 +16,19 @@ Before completing the steps in the Resolution section, consider the following:
 
 ## Resolution
 
+### Prerequisites
+- EKS Cluster version 1.15 or later
+- Public subnets must be tagged as follows so that Kubernetes knows to use only those subnets for external load balancers
+  `kubernetes.io/role/elb 1`
+- Private subnets must be tagged as follows so that Kubernetes knows it can use the subnets for internal load balancers
+  `kubernetes.io/role/internal-elb 1`
+- The AWS load balancer controller (formerly named AWS ALB Ingress Controller) creates ALBs and the necessary supporting AWS resources whenever a Kubernetes Ingress resource is created on the cluster with the `kubernetes.io/ingress.class: alb` annotation. The Ingress resource configures the ALB to route HTTP or HTTPS traffic to different pods within the cluster. To ensure that your Ingress objects use the AWS load balancer controller, add the following annotation to your Kubernetes Ingress specification
+- The AWS load balancer controller supports the following traffic modes:
+  ```alb.ingress.kubernetes.io/target-type: instance
+     alb.ingress.kubernetes.io/target-type: ip
+  ```
+
+
 ### Create an Amazon EKS cluster, service account policy, and RBAC policies
 
 1. To use eksctl to create an Amazon EKS cluster for Fargate, run the following command:
