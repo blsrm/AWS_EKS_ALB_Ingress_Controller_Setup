@@ -70,7 +70,7 @@ metadata:
 $ kubectl apply -f rbac-role.yaml
 ```
 
-### Set up the ALB Ingress Controller
+## Set up the ALB Ingress Controller
 
 To run the ALB Ingress Controller as a Fargate pod, you must use **iam-for-pods**.
 
@@ -107,7 +107,7 @@ $ kubectl apply -f alb-ingress-controller.yaml
 $ kubectl rollout status deployment alb-ingress-controller -n kube-system
 ```
 
-### Test the ALB Ingress Controller
+## Test the ALB Ingress Controller
 
 You can create ALB Ingress resources and a Fargate profile to test the ALB Ingress Controller.
 
@@ -150,7 +150,7 @@ $ kubectl get ingress/2048-ingress -n 2048-game
 The command output should have the load balancer's fully qualified domain name (FQDN) that you can access from a web browser.
 
 
-### Troubleshoot the ALB Ingress Controller
+## Troubleshoot the ALB Ingress Controller
 
 If you have issues setting up the ALB Ingress Controller, run the following commands:
 ```
