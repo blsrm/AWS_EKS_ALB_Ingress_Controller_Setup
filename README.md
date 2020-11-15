@@ -1,5 +1,15 @@
 # AWS EKS ALB Ingress Controller Setup
-This document provides detailed step by step procedure for creating EKS Fargate ALB Ingress Controller
+This document provides detailed step by step procedure for creating EKS Fargate ALB Ingress Controller. I want to set up the Application Load Balancer (ALB) Ingress Controller on an Amazon Elastic Kubernetes Service (Amazon EKS) cluster for AWS Fargate.
+
+## Short description
+Before completing the steps in the Resolution section, consider the following:
+
+Indent YAML files correctly using spaces and not tabs.
+Replace placeholder values with your own values when you see <placeholder-value> in a command.
+Be aware that the --region variable isn't used in any of the following commands, because the default value for your AWS Region is used. To check the default value, run the aws configure command. To change the AWS Region, use the -region flag.
+Be aware that Amazon EKS for Fargate is available only in the following AWS Regions: US East (N. Virginia), US East (Ohio), Europe (Ireland), and Asia Pacific (Tokyo).
+Use eksctl version 0.11.1 or greater.
+
 
 Step1: Deploy the relevant RBAC roles and role bindings as required by the AWS ALB Ingress controller
  
