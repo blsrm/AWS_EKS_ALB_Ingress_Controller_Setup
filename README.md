@@ -1,5 +1,8 @@
-# AWS EKS ALB Ingress Controller Setup
-This document provides detailed step by step procedure for creating EKS Fargate ALB Ingress Controller. I want to set up the Application Load Balancer (ALB) Ingress Controller on an Amazon Elastic Kubernetes Service (Amazon EKS) cluster for AWS Fargate.
+# AWS EKS ALB Ingress Controller Setup for Fargate
+
+This document provides detailed step by step procedure for creating EKS Fargate ALB Ingress Controller. 
+
+I want to set up the Application Load Balancer (ALB) Ingress Controller on an Amazon Elastic Kubernetes Service (Amazon EKS) cluster for AWS Fargate.
 
 ## Short description
 Before completing the steps in the Resolution section, consider the following:
@@ -86,9 +89,9 @@ $ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-cont
       containers:
       - args:
         - --ingress-class=alb
-        - --cluster-name=your-cluster-name    #<-- Add the cluster name
-        - --aws-vpc-id=vpc-xxxxxxxxxxxxxxxxx    #<-- Add the VPC ID 
-        - --aws-region=eu-west-1    #<-- Add the region 
+        - --cluster-name=your-cluster-name                           #<-- Add the cluster name
+        - --aws-vpc-id=vpc-xxxxxxxxxxxxxxxxx                         #<-- Add the VPC ID 
+        - --aws-region=eu-west-1                                     #<-- Add the region 
         image: docker.io/amazon/aws-alb-ingress-controller:v1.1.4    #<======= Please make sure the Image is 1.1.4 and above. 
         imagePullPolicy: IfNotPresent
 ```
@@ -104,10 +107,69 @@ $ kubectl apply -f alb-ingress-controller.yaml
 $ kubectl rollout status deployment alb-ingress-controller -n kube-system
 ```
 
+### Test the ALB Ingress Controller
 
-# Reference Links
+You can create ALB Ingress resources and a Fargate profile to test the ALB Ingress Controller.
+
+1. In the [Amazon EKS console](https://console.aws.amazon.com/eks/), create a [Fargate profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate-profile.html) for the namespace 2048-game, or run the following command to create the profile using eksctl:
+
+```
+$ eksctl create fargateprofile --namespace 2048-game --cluster your-cluster-name
+```
+
+**Note**: If you create the profile with the Amazon EKS console, use the private subnets associated with your Amazon Virtual Private Cloud (Amazon VPC). Pods running on Fargate aren't assigned public IP addresses. Fargate profiles support only private subnets (with no direct route to an internet gateway).
+
+2. To download the 2048-ingress file, run the following command:
+```
+$ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/2048/2048-ingress.yaml
+```
+
+3. Open the 2048-ingress file in a text editor, and then make the following changes to the annotations:
+```
+ annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip                       # Add this annotation
+    alb.ingress.kubernetes.io/security-groups: your-security-group  # Custom security group
+```
+**Note**: The ALB Ingress Controller works only in the IP mode on Amazon EKS for Fargate. For more information, see [Ingress annotations](https://kubernetes-sigs.github.io/aws-load-balancer-controller/guide/ingress/annotations/) on the AWS ALB Ingress Controller website.
+
+4. To apply the files for the test deployment, run the following commands:
+
+```
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/2048/2048-namespace.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/2048/2048-deployment.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/2048/2048-service.yaml
+$ kubectl apply -f 2048-ingress.yaml
+```
+5. To see the 2048 page using the address that you receive, run the following command:
+
+```
+$ kubectl get ingress/2048-ingress -n 2048-game
+```
+
+The command output should have the load balancer's fully qualified domain name (FQDN) that you can access from a web browser.
+
+
+### Troubleshoot the ALB Ingress Controller
+
+If you have issues setting up the ALB Ingress Controller, run the following commands:
+```
+$ kubectl logs your-alb-ingress-controller -n kube-system
+$ kubectl get endpoints -A
+$ kubectl get ingress/2048-ingress -n 2048-game
+```
+
+The output from the logs command returns error messages (for example, with tags or subnets) that can help you troubleshoot [common errors](https://github.com/kubernetes-sigs/aws-alb-ingress-controller/issues). The get endpoints and get ingress commands can show you ingress resources that aren't deployed successfully.
+
+If you run the YAML file for the ALB Ingress Controller without changing the image to 1.1.4, then you receive an error stating that the ALB Ingress Controller is unable to find the instance ID. To resolve this error, see [aws-alb-ingress-controller](https://github.com/kubernetes-sigs/aws-alb-ingress-controller/commit/4d1f94caa146a79f662ce66f7cabfdf0d355ac69#diff-0e2522e4ac7bdfb6c24a6093a6e09cea) on the Kubernetes GitHub website.
+
+**Note**: The image 1.1.3v has the configurations to check for the network interface of your Amazon Elastic Compute Cloud (Amazon EC2) instance. To enable the ALB Ingress Controller to run on Fargate, the image code is changed to find the associated elastic network interfaces instead of the Amazon EC2 worker nodes.
+
+
+## Reference Links
 
 ### AWS ALB
+https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
 https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/master/docs/guide/walkthrough/echoserver.md
 https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/
 https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
