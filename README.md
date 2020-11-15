@@ -24,7 +24,9 @@ Before completing the steps in the Resolution section, consider the following:
   `kubernetes.io/role/internal-elb 1`
 - The AWS load balancer controller (formerly named AWS ALB Ingress Controller) creates ALBs and the necessary supporting AWS resources whenever a Kubernetes Ingress resource is created on the cluster with the `kubernetes.io/ingress.class: alb` annotation. The Ingress resource configures the ALB to route HTTP or HTTPS traffic to different pods within the cluster. To ensure that your Ingress objects use the AWS load balancer controller, add the following annotation to your Kubernetes Ingress specification
 - The AWS load balancer controller supports the following traffic modes:
-  ```alb.ingress.kubernetes.io/target-type: instance
+  
+  ```
+     alb.ingress.kubernetes.io/target-type: instance
      alb.ingress.kubernetes.io/target-type: ip
   ```
 
@@ -39,9 +41,9 @@ Before completing the steps in the Resolution section, consider the following:
 
 2. To allow the cluster to use AWS Identity and Access Management (IAM) for service accounts, run the following command:
 
-```
-$ eksctl utils associate-iam-oidc-provider --cluster your-cluster-name --approve
-```
+  ```
+   $ eksctl utils associate-iam-oidc-provider --cluster your-cluster-name --approve
+  ```
 **Note**: The **FargateExecutionRole** is the role that the **kubelet** and **kube-proxy** run your Fargate pod on, but it's not the role for the Fargate pod (that is, the **alb-ingress-controller**). For the Fargate pod, you must use the IAM role for the service account.
 
 3. Create an IAM policy for the service account using the correct [permissions](https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/iam-policy.json) from the Kubernetes GitHub website, and note the Amazon Resource Name (ARN) of the IAM policy.
